@@ -1,6 +1,6 @@
 // jsvalid.js
 // James Diacono
-// 2023-01-24
+// 2024-06-01
 
 // Public Domain
 
@@ -22,7 +22,7 @@ function interpolate(template, container) {
     return template.replace(rx_variable, function (original, filling) {
         try {
             return String(container[filling]);
-        } catch (ignore) {
+        } catch (_) {
 
 // Objects with a null prototype are unprintable. Perhaps other values are too.
 
@@ -166,7 +166,7 @@ function wun_of(validators, classifier) {
             let key;
             try {
                 key = classifier(subject);
-            } catch (ignore) {
+            } catch (_) {
 
 // The classifier might have made reckless assumptions about the structure of
 // the subject, which is perfectly fine.
@@ -322,7 +322,7 @@ function array(validator_array, length_validator, rest_validator) {
         property("length", length_validator),
         function elements_validator(subject) {
             return all_of(
-                subject.map(function (ignore, element_nr) {
+                subject.map(function (_, element_nr) {
                     const validator = euphemize(validator_at(element_nr));
                     return property(element_nr, validator);
                 }),
@@ -398,7 +398,7 @@ function object(zeroth, wunth, allow_strays = false) {
 // property.
 
                     return all_of([
-                        function (ignore) {
+                        function () {
                             return euphemize(key_validator)(key);
                         },
                         property(key, value_validator)
