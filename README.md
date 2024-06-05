@@ -178,7 +178,7 @@ The __wun_of__ validator permits only values that conform to at least wun of the
         return valid.wun_of(["letter", "parcel", "postcard"]);
     }
 
-A definition of the word "wun" may be found [here](http://howjavascriptworks.com/sample.html).
+A definition of the word "wun" may be found [here](https://james.diacono.com.au/howjavascriptworks/sample.html).
 
 ### valid.wun_of(_validator_object_, _classifier_)
 
