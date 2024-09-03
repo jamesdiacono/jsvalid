@@ -1,6 +1,6 @@
 // jsvalid.js
 // James Diacono
-// 2024-06-01
+// 2024-09-03
 
 // Public Domain
 
@@ -10,6 +10,7 @@ const violation_messages = {
     not_finite: "Not a finite number.",
     not_type_a: "Not of type {a}.",
     not_wun_of: "Not a valid option.",
+    object_length: "Wrong number of properties.",
     out_of_bounds: "Out of bounds.",
     unexpected: "Unexpected.",
     unexpected_classification_a: "Unexpected classification '{a}'.",
@@ -332,11 +333,12 @@ function array(validator_array, length_validator, rest_validator) {
     ]);
 }
 
-function object(zeroth, wunth, allow_strays = false) {
+function object(zeroth, wunth, twoth) {
 
     function heterogeneous() {
         const required = coalesce(zeroth, {});
         const optional = coalesce(wunth, {});
+        const allow_strays = coalesce(twoth, false);
 
         function is_stray(key) {
             return !owns(required, key) && !owns(optional, key);
@@ -390,22 +392,36 @@ function object(zeroth, wunth, allow_strays = false) {
     function homogenous() {
         const key_validator = coalesce(zeroth, any());
         const value_validator = coalesce(wunth, any());
+        const length_validator = coalesce(twoth, any());
         return function homogenous_validator(subject) {
-            return all_of(
-                Object.keys(subject).map(function (key) {
+            const keys = Object.keys(subject);
+            const length_violations = euphemize(length_validator)(keys.length);
+            return all_of([
 
-// Returns a validator that validates both the key and the value of a single
-// property.
+// Validate the keys.
 
-                    return all_of([
-                        function () {
-                            return euphemize(key_validator)(key);
-                        },
-                        property(key, value_validator)
-                    ], true);
+                ...keys.map(function (key) {
+                    return function () {
+                        return euphemize(key_validator)(key);
+                    };
                 }),
-                true
-            )(subject);
+
+// Validate the values.
+
+                ...keys.map(function (key) {
+                    return property(key, value_validator);
+                }),
+
+// Validate the number of keys.
+
+                function () {
+                    return (
+                        length_violations.length === 0
+                        ? []
+                        : [make_violation("object_length")]
+                    );
+                }
+            ], true)(subject);
         };
     }
     return all_of([

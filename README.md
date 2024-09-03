@@ -160,11 +160,13 @@ The value of each property on the subject must conform to the corresponding vali
         );
     }
 
-### valid.object(_key_validator_, _value_validator_)
+### valid.object(_key_validator_, _value_validator_, _length_validator_)
 
 Each key found on the subject by `Object.keys` must conform to the _key_validator_. Each corresponding value must conform to the _value_validator_.
 
 All keys are permitted if the _key_validator_ is undefined. Likewise, all values are permitted if the _value_validator_ is undefined.
+
+The number of properties must conform to the _length_validator_, if it is defined.
 
     function valid_tracking_info() {
         return valid.object(valid_tracking_number(), valid_mail_journey());
